@@ -6,6 +6,8 @@ import 'package:calendar/components/today_banner.dart'; // 오늘의 날짜와 �
 import 'package:calendar/screen/home_addScheduleSheet.dart'; // 일정 추가 및 편집을 위한 하단 시트
 import 'package:calendar/provider/schedule_provider.dart'; // 일정 데이터 관리
 import 'package:calendar/provider/category_provider.dart'; // 카테고리 데이터 관리
+import 'package:intl/intl.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -39,10 +41,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // 선택된 날짜에 해당하는 일정을 필터링
     final filteredSchedules = scheduleProvider.schedules.where((schedule) {
-      final scheduleDate = schedule['selectedDate'] as DateTime;
-      return scheduleDate.year == selectedDate.year &&
-          scheduleDate.month == selectedDate.month &&
-          scheduleDate.day == selectedDate.day;
+      final startDate = schedule['selectedDate'] as DateTime; // 시작 날짜
+      final endDate = schedule['endDate'] as DateTime;       // 종료 날짜
+      // 선택된 날짜가 시작 날짜와 종료 날짜 사이에 있는지 확인
+      return selectedDate.isAfter(startDate.subtract(Duration(days: 1))) &&
+          selectedDate.isBefore(endDate.add(Duration(days: 1)));
     }).toList();
 
     return Scaffold(
@@ -156,11 +159,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                         : TextDecoration.none,
                                   ),
                                 ),
-                                subtitle: Text(
-                                  '종료 날짜: ${_formatDate(schedule['endDate'])}',
-                                  style: TextStyle(
-                                    color: DARK_GREY_COLOR,
-                                  ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      '종료 날짜: ${_formatDate(schedule['endDate'])}',
+                                      style: TextStyle(
+                                        color: DARK_GREY_COLOR,
+                                        fontSize: 12.0,
+                                      ),
+                                    ),
+                                    Text(
+                                      '종료 시간: ${_formatTime(schedule['endTime'] as TimeOfDay?)}',
+                                      style: TextStyle(
+                                        color: DARK_GREY_COLOR,
+                                        fontSize: 12.0,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 leading: Checkbox(
                                   value: schedule['isCompleted'],
@@ -211,6 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         // Category title
                         Padding(
@@ -261,11 +279,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                         : TextDecoration.none,
                                   ),
                                 ),
-                                subtitle: Text(
-                                  '종료 날짜: ${_formatDate(schedule['endDate'])}',
-                                  style: TextStyle(
-                                    color: DARK_GREY_COLOR,
-                                  ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      '날짜: ${_formatDate(schedule['endDate'])}',
+                                      style: TextStyle(
+                                        color: DARK_GREY_COLOR,
+                                        fontSize: 12.0,
+                                      ),
+                                    ),
+                                    Text(
+                                      '시간: ${_formatTime(schedule['startTime'] as TimeOfDay?)} ~ ${_formatTime(schedule['stopTime'] as TimeOfDay?)}',
+                                      style: TextStyle(
+                                        color: DARK_GREY_COLOR,
+                                        fontSize: 12.0,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 leading: Checkbox(
                                   value: schedule['isCompleted'],
@@ -375,5 +407,14 @@ class _HomeScreenState extends State<HomeScreen> {
   // 날짜를 문자열로 포맷하는 함수
   String _formatDate(DateTime date) {
     return '${date.year}-${date.month}-${date.day}';
+  }
+
+  String _formatTime(TimeOfDay? time) {
+    if (time == null) {
+      return "시간 없음"; // 기본 메시지
+    }
+    final now = DateTime.now();
+    final dateTime = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+    return DateFormat('hh:mm a').format(dateTime); // AM/PM 포맷
   }
 }
