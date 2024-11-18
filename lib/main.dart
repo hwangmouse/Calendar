@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:calendar/components/bottom_navigation.dart';
-import 'package:calendar/provider/schedule_provider.dart';// ScheduleProvider 파일 가져오기
+import 'package:calendar/provider/schedule_provider.dart'; // ScheduleProvider 파일 가져오기
 import 'package:calendar/provider/category_provider.dart'; // CategoryProvider 파일 가져오기
 import 'package:calendar/components/colors.dart';
 import 'package:calendar/alarm/background_alarm.dart'; // 알림 초기화 및 백그라운드 작업
+import 'package:calendar/provider/theme_provider.dart'; // ThemeProvider 파일 가져오기
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Flutter 시스템 초기화
@@ -21,6 +22,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => ScheduleProvider()), // 일정 관리 Provider 초기화 및 등록
         ChangeNotifierProvider(create: (_) => CategoryProvider()), // 카테고리 관리 Provider 초기화 및 등록
+        ChangeNotifierProvider(create: (_) => ThemeProvider()), // 테마 관리 Provider 초기화 및 등록
       ],
       child: MyApp(),
     ),
@@ -30,6 +32,8 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context); // ThemeProvider 상태 읽기
+
     return MaterialApp(
       title: 'Navigation Example', // 앱 타이틀 설정
       theme: ThemeData(
@@ -47,6 +51,8 @@ class MyApp extends StatelessWidget {
           bodyMedium: TextStyle(color: DARK_GREY_COLOR),
         ),
       ),
+      darkTheme: ThemeData.dark(), // Dark Mode 테마 설정
+      themeMode: themeProvider.themeMode, // 현재 테마 모드 설정
       home: BottomNavigationScreen(), // 메인 화면으로 하단 네비게이션 화면 설정
     );
   }
