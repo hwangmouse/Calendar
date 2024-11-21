@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:calendar/provider/category_provider.dart';
-import 'package:calendar/components/Subject.dart';
 import 'package:calendar/inapp_algorithm/SubjectData.dart';
 
 class SubjectAddScreen extends StatefulWidget {
@@ -28,15 +27,15 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
     super.initState();
     // Populate fields for edit mode
     if (widget.existingSubject != null) {
-      final subject = widget.existingSubject!;
-      _subjectNameController.text = subject.subjectName;
-      isMajor = subject.isMajor;
-      creditHours = subject.creditHours;
-      preferenceLevel = subject.preferenceLevel.toDouble();
-      attendanceRatio = subject.attendanceRatio;
-      midtermRatio = subject.midtermRatio;
-      finalRatio = subject.finalRatio;
-      assignmentRatio = subject.assignmentRatio;
+      final subjectData = widget.existingSubject!;
+      _subjectNameController.text = subjectData.subjectName;
+      isMajor = subjectData.isMajor;
+      creditHours = subjectData.creditHours;
+      preferenceLevel = subjectData.preferenceLevel.toDouble();
+      attendanceRatio = subjectData.attendanceRatio;
+      midtermRatio = subjectData.midtermRatio;
+      finalRatio = subjectData.finalRatio;
+      assignmentRatio = subjectData.assignmentRatio;
     }
   }
 
@@ -49,8 +48,8 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
       return;
     }
 
-    final newSubject = Subject(
-      name: _subjectNameController.text.trim(),
+    final newSubject = SubjectData(
+      subjectName: _subjectNameController.text.trim(),
       isMajor: isMajor,
       creditHours: creditHours,
       preferenceLevel: preferenceLevel.toInt(),
@@ -60,7 +59,7 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
       assignmentRatio: assignmentRatio,
     );
 
-    Provider.of<CategoryProvider>(context, listen: false).addSubjectCategory(newSubject.name);
+    Provider.of<CategoryProvider>(context, listen: false).addSubjectCategory(newSubject.subjectName);
 
     Navigator.pop(context, newSubject); // Return updated or new subject
   }

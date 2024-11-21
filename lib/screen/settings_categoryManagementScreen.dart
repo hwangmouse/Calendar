@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:calendar/provider/category_provider.dart'; // CategoryProvider import
 import 'package:calendar/screen/settings_categoryManagement_addSubjectScreen.dart'; // Subject 추가 화면
-import 'package:calendar/components/Subject.dart'; // Subject 모델 클래스 (이거 왜 필요없지)
 
 class CategoryManagementScreen extends StatelessWidget {
   @override
