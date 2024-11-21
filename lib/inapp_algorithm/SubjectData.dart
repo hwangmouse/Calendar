@@ -21,6 +21,36 @@ class SubjectData {
     this.importance = 0.0,
   });
 
+  // SubjectData 객체를 JSON 맵으로 변환
+  Map<String, dynamic> toJson() {
+    return {
+      'subjectName': subjectName,
+      'midtermRatio': midtermRatio,
+      'finalRatio': finalRatio,
+      'assignmentRatio': assignmentRatio,
+      'attendanceRatio': attendanceRatio,
+      'creditHours': creditHours,
+      'isMajor': isMajor,
+      'preferenceLevel': preferenceLevel,
+      'importance': importance,
+    };
+  }
+
+  // JSON 맵에서 SubjectData 객체로 변환
+  factory SubjectData.fromJson(Map<String, dynamic> json) {
+    return SubjectData(
+      subjectName: json['subjectName'],
+      midtermRatio: json['midtermRatio'],
+      finalRatio: json['finalRatio'],
+      assignmentRatio: json['assignmentRatio'],
+      attendanceRatio: json['attendanceRatio'],
+      creditHours: json['creditHours'],
+      isMajor: json['isMajor'],
+      preferenceLevel: json['preferenceLevel'],
+      importance: json['importance'] ?? 0.0,
+    );
+  }
+
   void calculateImportance(int maxCreditHours) {
     double creditScore = creditHours / maxCreditHours;
     double preferenceScore = 1.0;

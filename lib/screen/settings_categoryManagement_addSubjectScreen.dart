@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:calendar/provider/category_provider.dart';
 import 'package:calendar/components/Subject.dart';
+import 'package:calendar/inapp_algorithm/SubjectData.dart';
 
 class SubjectAddScreen extends StatefulWidget {
-  final Subject? existingSubject; // For edit mode
+  final SubjectData? existingSubject; // For edit mode
 
   SubjectAddScreen({this.existingSubject});
 
@@ -13,13 +14,13 @@ class SubjectAddScreen extends StatefulWidget {
 }
 
 class _SubjectAddScreenState extends State<SubjectAddScreen> {
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _subjectNameController = TextEditingController();
   bool isMajor = false;
-  int credit = 1;
-  double preference = 1.0;
+  int creditHours = 1;
+  double preferenceLevel = 1.0;
   double attendanceRatio = 0.0;
-  double midExamRatio = 0.0;
-  double finalExamRatio = 0.0;
+  double midtermRatio = 0.0;
+  double finalRatio = 0.0;
   double assignmentRatio = 0.0;
 
   @override
@@ -28,19 +29,19 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
     // Populate fields for edit mode
     if (widget.existingSubject != null) {
       final subject = widget.existingSubject!;
-      _nameController.text = subject.name;
+      _subjectNameController.text = subject.subjectName;
       isMajor = subject.isMajor;
-      credit = subject.creditHours;
-      preference = subject.preferenceLevel.toDouble();
+      creditHours = subject.creditHours;
+      preferenceLevel = subject.preferenceLevel.toDouble();
       attendanceRatio = subject.attendanceRatio;
-      midExamRatio = subject.midtermRatio;
-      finalExamRatio = subject.finalRatio;
+      midtermRatio = subject.midtermRatio;
+      finalRatio = subject.finalRatio;
       assignmentRatio = subject.assignmentRatio;
     }
   }
 
   void _saveSubject() {
-    if ((attendanceRatio + midExamRatio + finalExamRatio + assignmentRatio)
+    if ((attendanceRatio + midtermRatio + finalRatio + assignmentRatio)
         .toStringAsFixed(2) != "1.00") {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('성적 비율의 합은 1.0이어야 합니다.')),
@@ -49,13 +50,13 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
     }
 
     final newSubject = Subject(
-      name: _nameController.text.trim(),
+      name: _subjectNameController.text.trim(),
       isMajor: isMajor,
-      creditHours: credit,
-      preferenceLevel: preference.toInt(),
+      creditHours: creditHours,
+      preferenceLevel: preferenceLevel.toInt(),
       attendanceRatio: attendanceRatio,
-      midtermRatio: midExamRatio,
-      finalRatio: finalExamRatio,
+      midtermRatio: midtermRatio,
+      finalRatio: finalRatio,
       assignmentRatio: assignmentRatio,
     );
 
@@ -77,7 +78,7 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
           children: [
             // 과목 이름 입력
             TextField(
-              controller: _nameController,
+              controller: _subjectNameController,
               decoration: InputDecoration(labelText: '과목 이름'),
             ),
             // 전공 여부
@@ -93,7 +94,7 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
             // 학점 선택
             DropdownButtonFormField<int>(
               decoration: InputDecoration(labelText: '학점'),
-              value: credit,
+              value: creditHours,
               items: List.generate(
                 3,
                     (index) => DropdownMenuItem(
@@ -103,7 +104,7 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
               ),
               onChanged: (value) {
                 setState(() {
-                  credit = value ?? 1;
+                  creditHours = value ?? 1;
                 });
               },
             ),
@@ -118,12 +119,12 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
                     5,
                         (index) => IconButton(
                       icon: Icon(
-                        index < preference ? Icons.star : Icons.star_border,
+                        index < preferenceLevel ? Icons.star : Icons.star_border,
                         color: Colors.amber,
                       ),
                       onPressed: () {
                         setState(() {
-                          preference = index + 1.0;
+                          preferenceLevel = index + 1.0;
                         });
                       },
                     ),
@@ -150,7 +151,7 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
               label: '중간고사 비율',
               onChanged: (value) {
                 setState(() {
-                  midExamRatio = double.tryParse(value) ?? 0.0;
+                  midtermRatio = double.tryParse(value) ?? 0.0;
                 });
               },
             ),
@@ -158,7 +159,7 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
               label: '기말고사 비율',
               onChanged: (value) {
                 setState(() {
-                  finalExamRatio = double.tryParse(value) ?? 0.0;
+                  finalRatio = double.tryParse(value) ?? 0.0;
                 });
               },
             ),
